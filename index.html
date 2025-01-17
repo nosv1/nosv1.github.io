@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title </title>
+    <title>Title</title>
 </head>
 
 <body>
@@ -12,16 +12,40 @@
 
     <script>
         async function loadHTMLSnippet(url) {
-            const response = await fetch(url);
-            const html = response.text();
-            document.getElementById('content').innerHTML = html;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const html = await response.text();
+                const contentDiv = document.getElementById('content');
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const htmlElement = tempDiv.firstElementChild;
+                contentDiv.insertAdjacentElement('beforeend', htmlElement);
+                executeScripts(contentDiv);
+            } catch (error) {
+                console.error('Failed to load HTML snippet:', error);
+            }
         }
 
-        document.addEventListener('DOMContentLoaded',
-            loadHTMLSnippet(
-                'https://raw.githubusercontent.com/nosv1/nosv1.github.io/refs/heads/main/sra_insights/zolder_lap_time.html'
-            )
-        );
+        function executeScripts(element) {
+            const scripts = element.getElementsByTagName('script');
+            for (let script of scripts) {
+                const newScript = document.createElement('script');
+                newScript.text = script.text;
+                document.body.appendChild(newScript);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const snippets = [
+                'https://raw.githubusercontent.com/nosv1/nosv1.github.io/refs/heads/main/sra_insights/zolder_lap_time.html',
+                'https://raw.githubusercontent.com/nosv1/nosv1.github.io/refs/heads/main/sra_insights/zolder_split1.html',
+                'https://raw.githubusercontent.com/nosv1/nosv1.github.io/refs/heads/main/sra_insights/zolder_split2.html',
+                'https://raw.githubusercontent.com/nosv1/nosv1.github.io/refs/heads/main/sra_insights/zolder_split3.html'
+            ];
+
+            snippets.forEach(loadHTMLSnippet);
+        });
     </script>
 </body>
 
