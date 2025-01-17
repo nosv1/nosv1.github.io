@@ -8,19 +8,9 @@
 </head>
 
 <body>
-    <h1>JSON Data</h1>
-    <div id="json-data"></div>
+    <div id="content">
 
-    <script>
-        async function fetchJSON() {
-            const url = 'https://raw.githubusercontent.com/nosv1/nosv1.github.io/sra_insights/weekend.json';
-            const response = await fetch(url);
-            const data = await response.json();
-            document.getElementById('json-data').textContent = JSON.stringify(data, null, 2);
-        }
-
-        fetchJSON();
-    </script>
+    </div>
 </body>
 
 </html>
