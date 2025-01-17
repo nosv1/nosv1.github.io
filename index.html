@@ -4,48 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SRA Insights{% endblock %}</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/race_viewer">Race Viewer</a></li>
-            <li><a href="/track_time_viewer">Track Time Viewer</a></li>
-            <li><a href="/apd_viewer">APD Viewer</a></li>
-            <li><a href="/insights">Insights</a></li>
-            <li><a href="/about">About</a></li>
-        </ul>
-    </nav>
-    <div>
-        <button id="clear_cache_button">Clear Cache</button>
+    <ul>
         <script>
-            document.getElementById("clear_cache_button").addEventListener("click", function () {
-                fetch("/clear_cache", {
-                    method: "POST",
-                }).then(response => {
-                    if (response.ok) {
-                        document.getElementById("clear_cache_button").innerText = "Cache Cleared";
-                        location.reload();
-                    } else {
-                        alert("Failed to clear cache");
-                    }
-                });
-            });
+            const folder = 'sra_insights/';
+            fetch(folder)
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const htmlDoc = parser.parseFromString(data, 'text/html');
+                    const links = htmlDoc.querySelectorAll('a');
+                    const ul = document.querySelector('ul');
+
+                    links.forEach(link => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = link.getAttribute('href');
+                        a.textContent = link.textContent;
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error fetching folder contents:', error));
         </script>
-    </div>
-    <header>
-        <h1>{% block header %}SRA Insights{% endblock %}</h1>
-    </header>
-    <div class="content">
-        {% block content %}{% endblock %}
-    </div>
-    <div class="disclaimer">
-        This site is not officially supported by Sim Racing Alliance (SRA).
-    </div>
+    </ul>
 </body>
 
 </html>
