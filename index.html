@@ -8,9 +8,21 @@
 </head>
 
 <body>
-    <div id="content">
+    <div id="content"></div>
 
-    </div>
+    <script>
+        async function loadHTMLSnippet(url) {
+            const response = await fetch(url);
+            const html = response.text();
+            document.getElementById('content').innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded',
+            loadHTMLSnippet(
+                'https://raw.githubusercontent.com/nosv1/nosv1.github.io/refs/heads/main/sra_insights/zolder_lap_time.html'
+            )
+        );
+    </script>
 </body>
 
 </html>
