@@ -45,13 +45,12 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const snippets = [];
+            const snippets = []
             for (let i = 0; i <= 5; i++) {
                 snippets.push(
                     `https://raw.githubusercontent.com/nosv1/nosv1.github.io/refs/heads/main/sra_insights/track_times_plots/track_times_plot_${i}.html`
-                    );
+                );
             }
-
             snippets.forEach(loadHTMLSnippet);
         });
     </script>
