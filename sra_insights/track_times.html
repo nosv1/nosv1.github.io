@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRA Insights</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>SRA Insights</h1>
+    </header>
+    <h2>Track Time Viewer</h2>
+    <p>Use your mouse to click and drag on the plot and change the focus area.</p>
+
+    <div id="content"></div>
+
+    <script>
+        async function loadHTMLSnippet(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const html = await response.text();
+                const contentDiv = document.getElementById('content');
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const htmlElement = tempDiv.firstElementChild;
+                contentDiv.insertAdjacentElement('beforeend', htmlElement);
+                executeScripts(contentDiv);
+            } catch (error) {
+                console.error('Failed to load HTML snippet:', error);
+            }
+        }
+
+        function executeScripts(element) {
+            const scripts = element.getElementsByTagName('script');
+            for (let script of scripts) {
+                const newScript = document.createElement('script');
+                newScript.text = script.text;
+                document.body.appendChild(newScript);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const snippets = [];
+            for (let i = 0; i <= 5; i++) {
+                snippets.push(
+                    `https://raw.githubusercontent.com/nosv1/nosv1.github.io/refs/heads/main/sra_insights/track_times_plots/track_times_plot_${i}.html`
+                    );
+            }
+
+            snippets.forEach(loadHTMLSnippet);
+        });
+    </script>
+
+    <div class="disclaimer">
+        This site is not officially supported by Sim Racing Alliance (SRA).
+    </div>
+</body>
+
+</html>
