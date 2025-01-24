@@ -13,3 +13,16 @@ h1 {
 a {
     color: #ffcc00;
 }
+nav {
+    background-color: #444444;
+    color: #e0e0e0;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 20px;
+}
+nav a {
+    color: #ffcc00;
+}

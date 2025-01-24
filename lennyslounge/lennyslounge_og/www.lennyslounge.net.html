@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<!-- saved from url=(0094)https://www.lennyslounge.net/ACC%20Weather%20sim/?weekend=MTA7MzA7MzsyMjsxOzI7MTQ7MzYwO3RydWU7 -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="./www.lennyslounge.net_files/p5.min.js"
+        integrity="sha512-N4kV7GkNv7QR7RX9YF/olywyIgIwNvfEe2nZtfyj73HdjCUkAfOBDbcuJ/cTaN04JKRnw1YG1wnUyNKMsNgg3g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="./www.lennyslounge.net_files/WeatherSim.js"></script>
+    <script src="./www.lennyslounge.net_files/statistics.js"></script>
+    <script src="./www.lennyslounge.net_files/index.js"></script>
+    <style>
+        body {
+            font-family: Helvetica;
+            margin: 40px auto;
+            max-width: 650px;
+            line-height: 1.6;
+            font-size: 18px;
+            padding: 0 10px;
+            color: #222;
+        }
+
+        h1,
+        h2,
+        h3 {
+            line-height: 1.2;
+        }
+
+        #linkContainer {
+            overflow-wrap: break-word;
+        }
+
+        .session {
+            border: 1px solid #aaa;
+            margin: 5px 0 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .session button {
+            float: right;
+        }
+
+        .sessionTable {
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .sessionTable tr td:nth-child(1) {
+            width: 100px;
+        }
+
+        .sessionTable tr td:nth-child(3) {
+            width: 170px;
+        }
+
+        .sessionTable tr td:nth-child(2),
+        .sessionTable tr td:nth-child(4) {
+            padding: 0 10px 0 10px;
+        }
+
+        .sessionTable input,
+        .sessionTable select {
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        #linkContainer {
+            border: 1px solid rgb(93, 93, 255);
+            ;
+            border-radius: 5px;
+            padding: 20px 10px 20px 10px;
+            margin: 10px 0 10px 0;
+            background: rgb(235, 235, 255);
+        }
+
+        .sliderLable {
+            display: inline-block;
+            width: 120px;
+        }
+
+        .slider {
+            width: 100%;
+        }
+
+        #settingsTable {
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        #settingsTable tr td:nth-child(1) {
+            width: 110px;
+        }
+
+        #settingsTable tr td:nth-child(2) {
+            padding: 0 20px 0 10px;
+        }
+
+        #settingsTable tr td:nth-child(3) {
+            width: 50px;
+        }
+
+        button {
+            font-size: inherit;
+            padding: 5px 10px 5px 10px;
+            background-color: white;
+            border: 1px solid black;
+            border-radius: 3px;
+        }
+
+        button:hover {
+            background-color: #eee;
+        }
+
+        .session button {
+            padding: 0 5px 0 5px;
+        }
+
+        input,
+        select {
+            font-size: inherit;
+        }
+
+        input[type=checkbox] {
+            -ms-transform: scale(1.5);
+            -moz-transform: scale(1.5);
+            -webkit-transform: scale(1.5);
+            -o-transform: scale(1.5);
+            transform: scale(1.5);
+        }
+
+        .warning {
+            border: 1px solid rgb(255, 77, 77);
+            border-radius: 5px;
+            padding: 20px 10px 20px 10px;
+            margin: 10px 0 10px 0;
+            background-color: rgb(255, 196, 196);
+        }
+
+        .infoBox {
+            border: 1px solid rgb(93, 93, 255);
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0 10px 0;
+            background: rgb(235, 235, 255);
+        }
+    </style>
+</head>
+
+<body onload="onBodyLoad()" data-new-gr-c-s-check-loaded="14.1092.0" data-gr-ext-installed="">
+    <header>
+        <h1>Assetto Corsa Competizione<br> weather simulator</h1>
+        <aside>So you know what to expect for the race.</aside>
+    </header>
+    <p>
+        ACC uses a complicated algorithm to simulate the weather for the whole race weekend.
+        This website gives you the tools to find exaclty the settings you want and shows you what to expect for the
+        race.
+    </p>
+
+    <div class="infoBox">
+        <b>Now up to date with ACC version 1.8.11</b>
+    </div>
+
+    <h2>
+        Typical weekend forcast:
+    </h2>
+    <div id="canvasContainer">
+        <canvas id="defaultCanvas0" class="p5Canvas" style="width: 650px; height: 390px;" width="650"
+            height="390"></canvas></div>
+    <button onclick="generateNewWeatherSim()">Generate example new weekend</button><br>
+    <h2>
+        Configure your weekend here.
+    </h2>
+    <table id="settingsTable">
+        <tbody>
+            <tr>
+                <td>Rain Level:</td>
+                <td><input class="slider" id="rainLevelSlider" type="range" min="0" max="100" value="20" step="5"
+                        oninput="inputChangedSlider(0);"></td>
+                <td><span id="rainLevelSliderValue">0.1</span></td>
+            </tr>
+            <tr>
+                <td>Cloud Level:</td>
+                <td><input class="slider" id="cloudLevelSlider" type="range" min="0" max="100" value="30" step="5"
+                        oninput="inputChangedSlider(1);"></td>
+                <td><span id="cloudLevelSliderValue">0.3</span></td>
+            </tr>
+            <tr>
+                <td>Randomness:</td>
+                <td><input class="slider" id="randomnessSlider" type="range" min="0" max="7" ,="" value="3"
+                        oninput="inputChangedSlider(2);"></td>
+                <td><span id="randomnessSliderValue">3</span></td>
+            </tr>
+            <tr>
+                <td>Temperature:</td>
+                <td><input class="slider" id="temperatureSlider" type="range" min="10" max="45" ,="" value="25"
+                        oninput="inputChangedSlider(3);"></td>
+                <td><span id="temperatureSliderValue">22C°</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <button onclick="addEmptySession()">Add Session</button>
+    <div id="sessionContainer">
+        <div>
+            <div class="session"> <b>Session 0</b> <button onclick="deleteSession(0)">delete</button>
+                <table class="sessionTable">
+                    <tbody>
+                        <tr>
+                            <td>Day:</td>
+                            <td> <select id="sessionDay0" onchange="updateCopyLink()">
+                                    <option value="Friday">Friday</option>
+                                    <option value="Saturday">Saturday</option>
+                                    <option value="Sunday">Sunday</option>
+                                </select><br> </td>
+                            <td>Is Race:</td>
+                            <td><input type="checkbox" id="sessionRace0" onchange="updateCopyLink();runStatistics()">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Hour of day:</td>
+                            <td><input type="number" id="sessionHourOfDay0" value="14" onchange="updateCopyLink()"></td>
+                            <td>Duration in minutes:</td>
+                            <td><input type="number" id="sessionLength0" value="60"
+                                    onchange="updateCopyLink();runStatistics()"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <h3>Weekend statistics</h3>
+    <div id="statistics">1000 weekends simulated.<br><b>All session:</b><br>Sessions full dry: 679 (68%)<br>Sessions
+        full wet: 9 (1%)<br>Sessions mixed: 312 (31%)<br><br><b>Race sessions:</b><br>Sessions full dry: 679
+        (68%)<br>Sessions full wet: 9 (1%)<br>Sessions mixed: 312 (31%)<br><br><b>Average rain shower length:</b> 00h
+        34min<br><b>Average time between rain shower:</b> 06h 46min<br></div>
+    <br>
+
+    <h2>Share this forecast!</h2>
+    <div class="warning">
+        <h3>
+            Attention!
+        </h3>
+        <p>
+            This website is <b>not a prediction</b> for the weather of your race, it is merely a <b>example of what the
+                weather might be like</b>.
+            The weather of your race will always be random but similar to these results.
+        </p>
+    </div>
+    <div id="linkContainer">
+        <b>Link:</b><br>
+        <div id="linkContainerLink">
+            https://www.lennyslounge.net/ACC%20Weather%20sim/?weekend=MTA7MzA7MzsyMjsxOzI7MTQ7MzYwO3RydWU7</div>
+    </div>
+    <button onclick="copyLink()">Copy link</button>
+
+
+
+    <main></main><a style="display: none; " id="exifview-absolute-url-convert-proxy"
+        href="https://www.lennyslounge.net/ACC%20Weather%20sim/dummy"></a>
+</body>
+<grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open">
+        <style>
+            div.grammarly-desktop-integration {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            div.grammarly-desktop-integration:before {
+                content: attr(data-content);
+            }
+        </style>
+        <div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration"
+            data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}">
+        </div>
+    </template></grammarly-desktop-integration>
+
+</html>
