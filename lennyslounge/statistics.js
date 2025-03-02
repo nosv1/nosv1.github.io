@@ -12,6 +12,7 @@ function Statistics() {
     this.sunshineLength = [];
     this.medianShowerLength = 0;
     this.averageSunshineLength = 0;
+    this.expectedRainInRace = 0;
 }
 
 function runStatistics() {
@@ -45,6 +46,8 @@ function runSim(count) {
         weekend[weekend.length] = sim.calculateWeather(t);
 
     let hasRaceSessions = false;
+    let raceStartTime = 0;
+    let raceFinishTime = 0;
 
     // find if a racs is wet, dry or mixed.
     for (let i = 0; i < sessionArray.length; i++) {
@@ -68,6 +71,8 @@ function runSim(count) {
 
         if (raceElement.checked) {
             hasRaceSessions = true;
+            raceStartTime = startTime;
+            raceFinishTime = finishTime;
             if (wetCount == 0) statistics.dryRaceSessions++;
             else if (wetCount == finishIndex - startIndex + 1) statistics.wetRaceSessions++;
             else statistics.mixedRaceSessions++;
@@ -106,6 +111,10 @@ function runSim(count) {
         } else {
             statistics.medianShowerLength = statistics.showerLength[mid];
         }
+        if (hasRaceSessions) {
+            let raceDuration = raceFinishTime - raceStartTime;
+            statistics.expectedRainInRace = Math.pow(statistics.medianShowerLength, 2) / raceDuration;
+        }
     }
 
     // calc average sunshine length
@@ -131,6 +140,7 @@ function runSim(count) {
             "Sessions full wet: " + statistics.wetRaceSessions + " (" + Math.round(statistics.wetRaceSessions / statistics.racesRun * 100) + "%)<br>" +
             "Sessions mixed: " + statistics.mixedRaceSessions + " (" + Math.round(statistics.mixedRaceSessions / statistics.racesRun * 100) + "%)<br>" +
             "<br><b>Median rain shower length:</b> " + asDuration(statistics.medianShowerLength) + "<br>" +
+            "<b>Expected rain during race:</b> " + asDuration(statistics.expectedRainInRace) + "<br>" +
             "<b>Average time between rain shower:</b> " + asDuration(statistics.averageSunshineLength) + "<br>";
     }
     document.getElementById("statistics").innerHTML = text;
