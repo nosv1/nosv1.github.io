@@ -13,6 +13,7 @@ function Statistics() {
     this.medianShowerLength = 0;
     this.averageSunshineLength = 0;
     this.expectedRainInRace = 0;
+    this.weekends = [];
 }
 
 function runStatistics() {
@@ -44,6 +45,7 @@ function runSim(count) {
     let weekend = []
     for (let t = 0; t < 345600; t += 300)
         weekend[weekend.length] = sim.calculateWeather(t);
+    statistics.weekends.push(weekend)
 
     let hasRaceSessions = false;
     let raceStartTime = 0;
@@ -60,6 +62,7 @@ function runSim(count) {
         let finishTime = startTime + parseFloat(lengthElement.value) * 60;
         let startIndex = Math.floor(startTime / 300);
         let finishIndex = min(Math.ceil(finishTime / 300), weekend.length - 1);
+        statistics.weekends[statistics.weekends.length - 1] = statistics.weekends[statistics.weekends.length - 1].slice(startIndex, finishIndex + 1)
 
         let wetCount = 0;
         for (let j = startIndex; j <= finishIndex; j++) {

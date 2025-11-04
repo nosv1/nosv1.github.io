@@ -336,6 +336,57 @@ function copyLink() {
     alert("Link copied!")
 }
 
+/**
+ * Export the collected statistics.weekends array and the configured sessions
+ * into a JSON file and trigger download in the browser.
+ */
+function exportDataAsJSON() {
+    // Build serializable sessions list from the DOM/sessionArray
+    let sessionsExport = [];
+    for (let i = 0; i < sessionArray.length; i++) {
+        if (sessionArray[i] == 0) continue;
+        let dayEl = document.getElementById("sessionDay" + i);
+        let hourEl = document.getElementById("sessionHourOfDay" + i);
+        let lenEl = document.getElementById("sessionLength" + i);
+        let raceEl = document.getElementById("sessionRace" + i);
+        if (!dayEl || !hourEl || !lenEl || !raceEl) continue;
+        sessionsExport.push({
+            day: dayEl.value,
+            hour: parseFloat(hourEl.value),
+            lengthMinutes: parseFloat(lenEl.value),
+            isRace: raceEl.checked
+        });
+    }
+
+    // Use statistics.weekends (array of arrays of weather samples) if available
+    let weekendsExport = [];
+    if (typeof statistics !== 'undefined' && Array.isArray(statistics.weekends)) {
+        weekendsExport = statistics.weekends;
+    }
+
+    const payload = {
+        meta: {
+            exportedAt: (new Date()).toISOString(),
+            simsRun: (typeof statistics !== 'undefined') ? statistics.simsRun : 0
+        },
+        weekends: weekendsExport,
+        sessions: sessionsExport
+    };
+
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'acc_weather_export_' + (new Date()).toISOString().replace(/[:.]/g, '-') + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        URL.revokeObjectURL(url);
+        a.remove();
+    }, 1000);
+}
+
 function onBodyLoad() {
     // load the saved weekend from the url and load these settings
     let url = new URL(document.location.href);
