@@ -341,14 +341,22 @@ function copyLink() {
  * into a JSON file and trigger download in the browser.
  */
 function exportDataAsJSON() {
-    // Build serializable sessions list from the DOM/sessionArray
-    let sessionsExport = [];
+    // Gather weather settings
+    const settings = {
+        rainLevel: parseInt(document.getElementById("rainLevelSlider").value) / 100,
+        cloudLevel: parseInt(document.getElementById("cloudLevelSlider").value) / 100,
+        randomness: parseInt(document.getElementById("randomnessSlider").value),
+        temperature: parseInt(document.getElementById("temperatureSlider").value)
+    };
+
+    // Build sessions list from the DOM
+    const sessionsExport = [];
     for (let i = 0; i < sessionArray.length; i++) {
         if (sessionArray[i] == 0) continue;
-        let dayEl = document.getElementById("sessionDay" + i);
-        let hourEl = document.getElementById("sessionHourOfDay" + i);
-        let lenEl = document.getElementById("sessionLength" + i);
-        let raceEl = document.getElementById("sessionRace" + i);
+        const dayEl = document.getElementById("sessionDay" + i);
+        const hourEl = document.getElementById("sessionHourOfDay" + i);
+        const lenEl = document.getElementById("sessionLength" + i);
+        const raceEl = document.getElementById("sessionRace" + i);
         if (!dayEl || !hourEl || !lenEl || !raceEl) continue;
         sessionsExport.push({
             day: dayEl.value,
@@ -358,19 +366,19 @@ function exportDataAsJSON() {
         });
     }
 
-    // Use statistics.weekends (array of arrays of weather samples) if available
-    let weekendsExport = [];
-    if (typeof statistics !== 'undefined' && Array.isArray(statistics.weekends)) {
-        weekendsExport = statistics.weekends;
-    }
+    // Gather weekend simulations
+    const weekendsExport = (statistics && Array.isArray(statistics.weekends))
+        ? statistics.weekends
+        : [];
 
     const payload = {
         meta: {
-            exportedAt: (new Date()).toISOString(),
-            simsRun: (typeof statistics !== 'undefined') ? statistics.simsRun : 0
+            exportedAt: new Date().toISOString(),
+            simsRun: statistics ? statistics.simsRun : 0
         },
-        weekends: weekendsExport,
-        sessions: sessionsExport
+        settings: settings,
+        sessions: sessionsExport,
+        weekends: weekendsExport
     };
 
     const json = JSON.stringify(payload, null, 2);
@@ -378,7 +386,7 @@ function exportDataAsJSON() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'acc_weather_export_' + (new Date()).toISOString().replace(/[:.]/g, '-') + '.json';
+    a.download = `acc_weather_export_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {

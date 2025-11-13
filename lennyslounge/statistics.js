@@ -40,8 +40,9 @@ function runSim(count) {
     let rainLevel = parseInt(document.getElementById("rainLevelSlider").value) / 100;
     let cloudLevel = parseInt(document.getElementById("cloudLevelSlider").value) / 100;
     let randomness = parseInt(document.getElementById("randomnessSlider").value);
+    let ambientTemp = parseInt(document.getElementById("temperatureSlider").value);
 
-    let sim = new WeatherSim(rainLevel, cloudLevel, randomness, 27);
+    let sim = new WeatherSim(rainLevel, cloudLevel, randomness, ambientTemp);
     let weekend = []
     for (let t = 0; t < 345600; t += 300)
         weekend[weekend.length] = sim.calculateWeather(t);
@@ -62,7 +63,9 @@ function runSim(count) {
         let finishTime = startTime + parseFloat(lengthElement.value) * 60;
         let startIndex = Math.floor(startTime / 300);
         let finishIndex = min(Math.ceil(finishTime / 300), weekend.length - 1);
-        statistics.weekends[statistics.weekends.length - 1] = statistics.weekends[statistics.weekends.length - 1].slice(startIndex, finishIndex + 1)
+        // this will break if sessionArray is > 1, well it won't 'break' but weekends will be empty because it slices more than one time on the same element
+        statistics.weekends[statistics.weekends.length - 1] = statistics.weekends[statistics.weekends.length - 1]
+            .slice(startIndex, finishIndex + 1)
 
         let wetCount = 0;
         for (let j = startIndex; j <= finishIndex; j++) {
